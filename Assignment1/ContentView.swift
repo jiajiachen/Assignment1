@@ -8,18 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    let mapEmojis = ["🎃","🎃","🎃", "🎃", "🎃","🎃","🎃","🎃","🎃","🎃","🎃"]
-    let naturalEmojis = ["😈", "😈","😈","😈", "😈", "😈","😈","😈","😈","😈","😈","😈"]
-    let messageEmojis = ["🧙‍♀️", "🧙‍♀️","🧙‍♀️","🧙‍♀️", "🧙‍♀️", "🧙‍♀️","🧙‍♀️","🧙‍♀️","🧙‍♀️","🧙‍♀️","🧙‍♀️","🧙‍♀️"]
-    @State var emojiType: String = "Map"
+    let travelEmojis = ["🚗", "🚕","✈️","🛺", "🎡", "🚲","🚆","🛩️"]
+    let naturalEmojis = ["🐶","🐱","🐸","🐼", "🐵", "🦆", "🦄", "🐝", "🐢", "🦉"]
+    let fruitEmojis = ["🍏","🍎","🍐","🍋","🍆","🌽","🍌", "🥝", "🍑"]
+   
+    @State var emojis: Array<String> = []
+    @State var emojiType: String = ""
+   
+    @State var themeColor: Color?
+    
+    
     var body: some View {
         
         VStack {
             Text("Memorize!").font(.largeTitle)
             ScrollView {
-                cards
+                if (emojiType != "") {
+                    cards
+                }
+                
             }
-            
             Spacer()
             cardChooser
             
@@ -30,16 +38,12 @@ struct ContentView: View {
     
     var cards: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-            if emojiType == "Map" {
-                getCards(by: mapEmojis)
-            } else if emojiType == "Leaf" {
-                getCards(by: naturalEmojis)
-            } else if emojiType == "Message" {
-                getCards(by: messageEmojis)
-            }
+            ForEach(0..<emojis.count , id: \.self) { index in
+                CardView(content: emojis[index], isFaceUp: false, fillColor: themeColor)
+                    .aspectRatio(2/3, contentMode: .fit)
             
+            }
         }
-        .foregroundStyle(.orange)
     }
     
     var cardChooser: some View {
@@ -48,31 +52,52 @@ struct ContentView: View {
             Spacer()
             btnChooser(choose: "Leaf", symbol: emojiType == "Leaf" ? "leaf.fill" : "leaf")
             Spacer()
-            btnChooser(choose: "Message", symbol: emojiType == "Message" ? "message.fill" : "message")
+            btnChooser(choose: "Carrot", symbol: emojiType == "Carrot" ? "carrot.fill" : "carrot")
                
         }
+        .frame(width: 260)
         .imageScale(.large)
         .font(.title2)
     }
     
-    func getCards(by emojis: Array<String>) ->  some View {
-        ForEach(0..<8, id: \.self) { index in
-            CardView(content: emojis[index], isFaceUp: true)
-                .aspectRatio(2/3, contentMode: .fit)
-            CardView(content: emojis[index], isFaceUp: true)
-                .aspectRatio(2/3, contentMode: .fit)
-        }
-    }
+
     
     func btnChooser(choose type: String, symbol: String) -> some View {
         Button(action: {
+            emojis = []
             if type == "Map" {
                 emojiType = "Map"
+                let emojiCount = Int.random(in: 4...travelEmojis.count)
+                var emojiArray: Array<String> = []
+                for index in 0..<emojiCount {
+                    emojiArray.append(travelEmojis[index])
+                    emojiArray.append(travelEmojis[index])
+                }
+                emojis = emojiArray.shuffled()
+                themeColor = .purple
             } else if type == "Leaf" {
                 emojiType = "Leaf"
-            } else if type == "Message" {
-                emojiType = "Message"
+                let emojiCount = Int.random(in: 4...naturalEmojis.count)
+                var emojiArray: Array<String> = []
+                for index in 0..<emojiCount {
+                    emojiArray.append(naturalEmojis[index])
+                    emojiArray.append(naturalEmojis[index])
+                }
+                emojis = emojiArray.shuffled()
+                themeColor = .green
+            } else if type == "Carrot" {
+                emojiType = "Carrot"
+                let emojiCount = Int.random(in: 4...fruitEmojis.count)
+                var emojiArray: Array<String> = []
+                for index in 0..<emojiCount {
+                    emojiArray.append(fruitEmojis[index])
+                    emojiArray.append(fruitEmojis[index])
+                }
+                emojis = emojiArray.shuffled()
+                themeColor = .orange
             }
+            print(1)
+            
         }, label: {
             VStack {
                 Image(systemName: symbol)
@@ -87,6 +112,8 @@ struct ContentView: View {
 struct CardView: View {
     let content: String
     @State var isFaceUp: Bool = false
+    let fillColor: Color?
+    
     var body: some View {
         ZStack {
             let base = RoundedRectangle(cornerRadius: 12)
@@ -96,9 +123,9 @@ struct CardView: View {
                 Text(content).font(.largeTitle)
             }.opacity(isFaceUp ? 1 : 0)
             base.fill().opacity(isFaceUp ? 0 : 1)
-        }
+        }.foregroundStyle(fillColor!)
         .onTapGesture {
-            isFaceUp.toggle()
+           isFaceUp.toggle()
         }
    
     }
