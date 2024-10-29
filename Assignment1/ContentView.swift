@@ -19,7 +19,6 @@ struct ContentView: View {
     
     
     var body: some View {
-        
         VStack {
             Text("Memorize!").font(.largeTitle)
             ScrollView {
@@ -47,7 +46,7 @@ struct ContentView: View {
     }
     
     var cardChooser: some View {
-        HStack {
+        HStack(alignment: .lastTextBaseline) {
             btnChooser(choose: "Map", symbol: emojiType == "Map" ? "map.fill" : "map")
             Spacer()
             btnChooser(choose: "Leaf", symbol: emojiType == "Leaf" ? "leaf.fill" : "leaf")
@@ -68,30 +67,33 @@ struct ContentView: View {
             if type == "Map" {
                 emojiType = "Map"
                 let emojiCount = Int.random(in: 4...travelEmojis.count)
+                let travelEmojisShuffled = travelEmojis.shuffled()
                 var emojiArray: Array<String> = []
                 for index in 0..<emojiCount {
-                    emojiArray.append(travelEmojis[index])
-                    emojiArray.append(travelEmojis[index])
+                    emojiArray.append(travelEmojisShuffled[index])
+                    emojiArray.append(travelEmojisShuffled[index])
                 }
                 emojis = emojiArray.shuffled()
                 themeColor = .purple
             } else if type == "Leaf" {
                 emojiType = "Leaf"
                 let emojiCount = Int.random(in: 4...naturalEmojis.count)
+                let naturalEmojisShuffled = naturalEmojis.shuffled()
                 var emojiArray: Array<String> = []
                 for index in 0..<emojiCount {
-                    emojiArray.append(naturalEmojis[index])
-                    emojiArray.append(naturalEmojis[index])
+                    emojiArray.append(naturalEmojisShuffled[index])
+                    emojiArray.append(naturalEmojisShuffled[index])
                 }
                 emojis = emojiArray.shuffled()
                 themeColor = .green
             } else if type == "Carrot" {
                 emojiType = "Carrot"
                 let emojiCount = Int.random(in: 4...fruitEmojis.count)
+                let fruitEmojisShuffled = fruitEmojis.shuffled()
                 var emojiArray: Array<String> = []
                 for index in 0..<emojiCount {
-                    emojiArray.append(fruitEmojis[index])
-                    emojiArray.append(fruitEmojis[index])
+                    emojiArray.append(fruitEmojisShuffled[index])
+                    emojiArray.append(fruitEmojisShuffled[index])
                 }
                 emojis = emojiArray.shuffled()
                 themeColor = .orange
