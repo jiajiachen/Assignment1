@@ -21,11 +21,13 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text("Memorize!").font(.largeTitle)
-            ScrollView {
-                if (emojiType != "") {
-                    cards
-                }
-                
+//            ScrollView {
+//                if (emojiType != "") {
+//                    cards
+//                }
+//            }
+            if (emojiType != "") {
+                cards
             }
             Spacer()
             cardChooser
@@ -36,13 +38,29 @@ struct ContentView: View {
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-            ForEach(0..<emojis.count , id: \.self) { index in
-                CardView(content: emojis[index], isFaceUp: false, fillColor: themeColor)
-                    .aspectRatio(2/3, contentMode: .fit)
+        GeometryReader { geometry in
+            let gridItemSize = gridItemWidthThatFits(
+                count: emojis.count,
+                size: geometry.size,
+                atAspectRatio: 2/3)
             
+//            LazyVGrid(columns: [GridItem(.adaptive(minimum: gridItemSize), spacing: 0)], spacing: 0) {
+//                ForEach(items) { item in
+//                    content(item)
+//                        .aspectRatio(aspectRatio, contentMode: .fit)
+//                }
+//            }
+            
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: gridItemSize), spacing: 0)], spacing: 0) {
+                ForEach(0..<emojis.count , id: \.self) { index in
+                    CardView(content: emojis[index], isFaceUp: false, fillColor: themeColor)
+                        .padding(4)
+                        .aspectRatio(2/3, contentMode: .fit)
+                
+                }
             }
         }
+   
     }
     
     var cardChooser: some View {
@@ -107,6 +125,27 @@ struct ContentView: View {
             }
             
         })
+    }
+    func gridItemWidthThatFits(
+        count: Int,
+        size: CGSize,
+        atAspectRatio aspectRatio: CGFloat
+    ) -> CGFloat {
+        let count = CGFloat(count)
+        var columnCount = 1.0
+        // print(count)
+        repeat {
+            let width = size.width / columnCount
+            let height = width / aspectRatio
+            
+            let rowCount = (count / columnCount).rounded(.up)
+            if rowCount * height < size.height {
+                return (size.width / columnCount).rounded(.down)
+            }
+            columnCount += 1
+        } while columnCount < count
+        return min(size.width / count, size.height * aspectRatio).rounded(.down)
+        
     }
     
 }
